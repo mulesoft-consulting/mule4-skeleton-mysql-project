@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:min-log="http://www.mulesoft.org/schema/mule/min-log"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/min-log http://www.mulesoft.org/schema/mule/min-log/current/mule-min-log.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="logicFlow" doc:id="937a2d6c-1825-4e1e-8d1d-c8287642f52d">
+		<scheduler doc:name="Scheduler" doc:id="a8642b09-98c2-411f-935e-c5bd984e3e72">
+			<scheduling-strategy>
+				<fixed-frequency frequency="10" timeUnit="SECONDS" />
+			</scheduling-strategy>
+		</scheduler>
+		<min-log:new doc:name="Set transaction properties"
+			doc:id="03a758b5-7519-4a26-b745-754aebe0c195" target="transactionProperties"
+			headers="#[{}]" />
+<!-- 		<min-log:timed transactionProperties="#[vars.transactionProperties]" -->
+<!-- 			doc:name="Timed" doc:id="63086e80-b2df-4df4-953a-cf83ddea857c"> -->
+			<min-log:put doc:name="Put test.propertyA"
+				doc:id="c5bb0d4e-3d86-4325-bf30-6b702502b6a9" key="test.propertyA"
+				value="${secure::test.propertyA}" target="transactionProperties"
+				transactionProperties="#[vars.transactionProperties]" />
+			<min-log:log level="WARN" msg="A Test warning"
+				transactionProperties="#[vars.transactionProperties]" doc:name="Example WARN" />
+		<db:select doc:name="Select" doc:id="da5be866-d83e-4e3b-8e28-92ec8383e830" config-ref="Database_Config">
+			<db:sql >select * from worker_cache WHERE deletedFlag != :DELETED</db:sql>
+			<db:input-parameters ><![CDATA[#[{'DELETED': 1}]]]></db:input-parameters>
+		</db:select>
+		<db:bulk-insert doc:name="Bulk insert" doc:id="8536ebb3-aadc-4387-8cca-6670b5c16d34" config-ref="Database_Config">
+			<db:sql >insert into worker_temp_cache(cacheKey,milliTS,lastTransactionId,deletedFlag,value) values(:cacheKey,:milliTS,:lastTransactionId,:deletedFlag,:value)</db:sql>
+		</db:bulk-insert>
+		<min-log:log doc:name="Log" doc:id="ad66b9ec-83d4-4433-8689-ec0d65e0b95a" msg="#[payload]" transactionProperties="#[vars.transactionProperties]"/>
+<!-- 		</min-log:timed> -->
+	</flow>
+</mule>

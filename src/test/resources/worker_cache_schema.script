@@ -1,0 +1,49 @@
+mysql -uroot
+create user 'pdd'@'localhost' identified by 'pdd';
+create database worker_cache_db;
+grant all privileges on worker_cache_db.* to 'pdd'@'localhost' with grant option;
+
+
+use worker_cache_db;
+CREATE TABLE worker_cache (
+  cacheKey VARCHAR(80) NOT NULL,
+  milliTS BIGINT,
+  lastTransactionId VARCHAR(40) NOT NULL,
+  deletedFlag TINYINT,
+  value LONGTEXT,
+  PRIMARY KEY (cacheKey),
+  UNIQUE KEY (lastTransactionId)
+);
+CREATE INDEX worker_cache_milliTS_idx ON worker_cache(milliTS);
+show index from worker_cache;
+show columns from worker_cache;
+
+CREATE TABLE worker_temp_cache (
+  cacheKey VARCHAR(80) NOT NULL,
+  milliTS BIGINT,
+  lastTransactionId VARCHAR(40) NOT NULL,
+  deletedFlag TINYINT,
+  value LONGTEXT,
+  PRIMARY KEY (cacheKey),
+  UNIQUE KEY (lastTransactionId)
+);
+
+CREATE TABLE worker_cache_transaction (
+  cacheKey VARCHAR(80) NOT NULL,
+  batchId VARCHAR(40) NOT NULL,
+  transactionId VARCHAR(40) NOT NULL,
+  transactionType VARCHAR(10) NOT NULL,
+  clientId VARCHAR(40) NOT NULL,
+  publisher VARCHAR(40) NOT NULL,
+  milliTS BIGINT NOT NULL,
+  patch LONGTEXT,
+  rollbackMilliTS BIGINT,
+  rollbackLastTransactionId VARCHAR(40),
+  rollbackDeletedFlag TINYINT,
+  rollbackValue LONGTEXT,
+  PRIMARY KEY (transactionId)
+);
+CREATE INDEX worker_cache_transaction_idx1 ON worker_cache_transaction(batchId);
+CREATE INDEX worker_cache_transaction_idx2 ON worker_cache_transaction(batchId, cacheKey);
+show index from worker_cache_transaction;
+show columns from worker_cache_transaction;
