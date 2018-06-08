@@ -10,7 +10,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<flow name="logicFlow" doc:id="937a2d6c-1825-4e1e-8d1d-c8287642f52d">
 		<scheduler doc:name="Scheduler" doc:id="a8642b09-98c2-411f-935e-c5bd984e3e72">
 			<scheduling-strategy>
-				<fixed-frequency frequency="10" timeUnit="SECONDS" />
+				<fixed-frequency frequency="10" timeUnit="MINUTES" />
 			</scheduling-strategy>
 		</scheduler>
 		<min-log:new doc:name="Set transaction properties"

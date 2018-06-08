@@ -7,6 +7,7 @@ Note, the scope features of minimal-logging are not displayed correctly by Studi
 
 The project contains examples using:
 
+* Database connector with MySql (MariaDB)
 * The minimal-logging connector, 
 * The secure property connector (formally called the secure-property-placeholder),
 * Maven deployment using the mule-maven-plugin descriptor.
