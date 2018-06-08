@@ -13,7 +13,7 @@ The project contains examples using:
 * Maven deployment using the mule-maven-plugin descriptor.
 
 ## Purpose
-This project is an example only. It contains a scheduling component to periodically (every ten minutes), use the minimal-logging operations to generate a new transaction id, display three (enter, warning and exit) log messages.
+This project is an example only. It demonstrates database select and bulk insert operations.
 
 
 ## Runtime properties
